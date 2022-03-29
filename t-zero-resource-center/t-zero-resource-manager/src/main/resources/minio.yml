@@ -1,0 +1,4 @@
+url: http://t-zero-minio.com:19000
+access-key: admin
+secret-key: t-zero-davin
+bucket-name: designcloud

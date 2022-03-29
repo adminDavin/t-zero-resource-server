@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.t.zero.res.c.manager.bu.dao.manual.ManualResInfoDefMapper">
+  <resultMap id="BaseResultMap" type="com.t.zero.res.c.manager.bu.model.auto.ResInfoDef">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="tenant_id" jdbcType="INTEGER" property="tenantId" />
+    <result column="res_info_code" jdbcType="VARCHAR" property="resInfoCode" />
+    <result column="res_info_name" jdbcType="VARCHAR" property="resInfoName" />
+    <result column="res_info_type" jdbcType="VARCHAR" property="resInfoType" />
+    <result column="res_content_type" jdbcType="VARCHAR" property="resContentType" />
+    <result column="res_info_store" jdbcType="VARCHAR" property="resInfoStore" />
+    <result column="res_info_parent_code" jdbcType="VARCHAR" property="resInfoParentCode" />
+    <result column="res_info_size" jdbcType="INTEGER" property="resInfoSize" />
+    <result column="version_id" jdbcType="VARCHAR" property="versionId" />
+    <result column="res_info_desc" jdbcType="VARCHAR" property="resInfoDesc" />
+    <result column="res_info_owner_id" jdbcType="INTEGER" property="resInfoOwnerId" />
+    <result column="res_info_owner_type" jdbcType="VARCHAR" property="resInfoOwnerType" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="created_user_id" jdbcType="VARCHAR" property="createdUserId" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="updated_user_id" jdbcType="VARCHAR" property="updatedUserId" />
+    <result column="is_deleted" jdbcType="VARCHAR" property="deletedFlag" />
+  </resultMap>
+  
+  <sql id="Filter_Where_Clause">
+		<if test="filters.resInfoName != null and filters.resInfoName!=''">
+			and r.res_info_name like concat('%', #{filters.resInfoName}, '%')
+		</if>
+		<if test="filters.resInfoType != null and filters.resInfoType!=''">
+			and r.res_info_type = #{filters.resInfoType}
+		</if>
+		<if test="!filters.notInResContentType and filters.resContentTypes != null and filters.resContentTypes.size() > 0 ">
+			and r.res_content_type in 
+			 <foreach collection="filters.resContentTypes" item="item" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="filters.notInResContentType and filters.resContentTypes != null and filters.resContentTypes.size() > 0 ">
+			and r.res_content_type not in 
+			 <foreach collection="filters.resContentTypes" item="item" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="filters.resTagCodes != null and filters.resTagCodes.size() > 0 ">
+			and t.res_tag_code in
+			<foreach collection="filters.resTagCodes" item="item" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
+		<if test="filters.updatedTimes != null and filters.updatedTimes.length > 0 ">
+			and r.updated_time between (#{filters.updatedTimes[0]}, #{filters.updatedTimes[1]})
+		</if>
+		<if test="filters.ownerId != null">
+			and r.res_info_owner_id = #{filters.ownerId}
+		</if>
+  </sql>
+  
+  <select id="selectListByPage" resultMap="BaseResultMap">
+  	SELECT 
+	    distinct r.id, r.tenant_id, r.res_info_code, r.res_info_name, r.res_info_type, r.res_content_type, r.res_info_store, r.res_info_parent_code, r.res_info_size, r.res_info_owner_id, r.res_info_owner_type, r.created_time, r.created_user_id, r.updated_time, r.updated_user_id, r.is_deleted
+	FROM
+	    t_zero_res_info_def r
+	        JOIN
+	    t_zero_res_tag_rel t
+	on
+	    r.id = t.res_info_id
+	  where r.is_deleted = 0 
+	  and r.tenant_id = #{tenantId}
+	  <include refid="Filter_Where_Clause" />
+    order by r.updated_time desc
+    limit #{currentPage}, #{pageSize}
+  </select>
+  <select id="selectCount" resultType="java.lang.Integer">
+    SELECT 
+	    count(distinct r.id)
+	FROM
+	    t_zero_res_info_def r
+	        JOIN
+	    t_zero_res_tag_rel t
+	on
+	    r.id = t.res_info_id
+	  where r.is_deleted = 0 
+	  and r.tenant_id = #{tenantId}
+	  <include refid="Filter_Where_Clause" />
+   </select>
+   <select id="selectListNoTagByPage" resultMap="BaseResultMap">
+  	SELECT 
+	    r.id, r.tenant_id, r.res_info_code, r.res_info_name, r.res_info_type, r.res_content_type, r.res_info_store, r.res_info_parent_code, r.res_info_size, r.res_info_owner_id, r.res_info_owner_type, r.created_time, r.created_user_id, r.updated_time, r.updated_user_id, r.is_deleted
+	FROM
+	    t_zero_res_info_def r
+	  where r.is_deleted = 0 
+	  and r.tenant_id = #{tenantId}
+	  <include refid="Filter_Where_Clause" />
+    order by r.updated_time desc
+    limit #{currentPage}, #{pageSize}
+  </select>
+  <select id="selectNoTagCount" resultType="java.lang.Integer">
+    SELECT 
+	    count(r.id)
+	FROM
+	    t_zero_res_info_def r
+	  where r.is_deleted = 0 
+	  and r.tenant_id = #{tenantId}
+	  <include refid="Filter_Where_Clause" />
+   </select>
+</mapper>

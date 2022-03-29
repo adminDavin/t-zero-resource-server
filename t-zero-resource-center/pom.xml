@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.t.zero</groupId>
+    <artifactId>t-zero</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <groupId>com.t.zero.res.c</groupId>
+  <artifactId>t-zero-resource-center</artifactId>
+  <packaging>pom</packaging>
+  <description>资源管理中心</description>
+  <modules>
+  	<module>t-zero-resource-manager</module>
+  </modules>
+</project>

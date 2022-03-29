@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="/Users/davinzhang/.m2/repository/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar" />
+    <context id="MySQLTables" targetRuntime="MyBatis3">
+        <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter" />
+        <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter" />
+        <property name="javaFileEncoding" value="UTF-8" />
+
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+        <!-- 配置生成自定义的类序列化接口的插件 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver" connectionURL="jdbc:mysql://39.106.63.237:3306/t_zero?serverTimezone=UTC" userId="t_zero_dev" password="Davin1203!">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="useJSR310Types" value="true" />
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.t.zero.res.c.manager.bu.model.auto" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="auto-mappers" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.t.zero.res.c.manager.bu.dao.auto" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+
+        <table tableName="t_zero_res_info_def" domainObjectName="ResInfoDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        <table tableName="t_zero_res_tag_def" domainObjectName="ResTagDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        <table tableName="t_zero_res_tag_rel" domainObjectName="ResTagRel">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        <table tableName="t_zero_res_auth_def" domainObjectName="ResAuthDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        <table tableName="t_zero_res_auth_rel" domainObjectName="ResAuthRel">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        
+        <table tableName="t_zero_res_tag_rel" domainObjectName="ResTagRel">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        
+        
+         <table tableName="t_zero_res_task_def" domainObjectName="ResTaskDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+        
+        
+        
+    </context>
+</generatorConfiguration>	
