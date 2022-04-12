@@ -1,0 +1,22 @@
+server:
+   port: 11206
+   servlet:
+      context-path: /cust
+spring:
+   application.name: t-zero-auth-center
+   messages:
+      encoding: UTF-8
+      basename: i18n/messages
+      cache-second: 3600
+   profiles.include:
+   - common
+   - register
+   - datasource
+springfox:
+   documentation:
+      auto-startup: false
+logging:
+   level:
+      root: INFO
+      com.t.zero.res.c.manager.bu.dao.auto: DEBUG
+   path: ./logs
