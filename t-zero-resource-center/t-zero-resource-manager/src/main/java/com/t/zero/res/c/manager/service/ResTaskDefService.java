@@ -284,8 +284,7 @@ public class ResTaskDefService {
             resTaskDefMapper.updateByPrimaryKeySelective(r);
             uploadResourceHelper.saveFile(params, r);
         } else {
-            var finished = fileHandlerHelper
-                .doUploadPart(params, r.getResInfoStore(), r.getResTaskCode(), currentPart, r.getPartCount(), r.getResInfoSize(), file);
+            var finished = fileHandlerHelper.doUploadPart(params, r.getResInfoStore(), r.getResTaskCode(), currentPart, r.getPartCount(), r.getResInfoSize(), file);
             if (finished.size() == r.getPartCount() - 1) {
                 r.setResTaskStatus(0);
                 fileHandlerHelper.completeMultipartUpload(r.getResInfoStore(), r.getResTaskCode());

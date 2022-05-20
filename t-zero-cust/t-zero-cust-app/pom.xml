@@ -16,6 +16,14 @@
 			<groupId>com.t.zero</groupId>
 			<artifactId>t-zero-config-base</artifactId>
 			<version>1.0.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.cloud</groupId>
+					<artifactId>
+						spring-cloud-starter-consul-discovery
+					</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.t.zero</groupId>

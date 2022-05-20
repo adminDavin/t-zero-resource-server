@@ -37,6 +37,7 @@ public class CustAppInfoService {
 	public Object list(CommonParams params, ObjectNode content) {
 		var example = new CustAppInfoExample();
 		example.createCriteria().andTenantIdEqualTo(params.getTenantId());
+		example.setOrderByClause(" updated_time desc");
 		var list = custAppInfoMapper.selectByExample(example);
 		var code = list.stream().map(i -> i.getAppInfoCode()).collect(Collectors.toList());
 		Map<String, List<CustTagInfo>> t1 = custAppInfoHelper.getTagInfosByAppInfos(code);

@@ -34,6 +34,7 @@ public class CustTagGroupService {
 	public Object list(CommonParams params, ObjectNode content) {
 			var example = new CustTagGroupExample();
 			example.createCriteria().andTenantIdEqualTo(params.getTenantId());
+			example.setOrderByClause(" updated_time desc");
 			var list = custTagGroupMapper.selectByExample(example);
 			var codes = list.stream().map(i -> i.getTagGroupCode()).collect(Collectors.toList());
 			var t1 = custRelTagGroupHelper.getTagInfosByTagGroups(codes);

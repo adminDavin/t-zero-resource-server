@@ -4,6 +4,7 @@ import static com.t.zero.common.base.contants.TZeroMethodConstants.LIST;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,14 +51,12 @@ public class FileOperationController extends TZeroBasicController {
         }
     }
     
-    @PostMapping(value = "/download", produces = RequestConstants.CONTENT_TYPE_JSON)
+    @GetMapping(value = "/download", produces = RequestConstants.CONTENT_TYPE_JSON)
     public void download(
-        @RequestHeader(value = Header.TENANT_ID) Integer tenantId,
-        @RequestHeader(value = Header.USER_ID) Integer userId,
         @RequestHeader(value = "User-Agent") String userAgent,
         @RequestHeader(value = "range", defaultValue = "bytes 0-") String range,
         @RequestParam(value = "resInfoStore") String resInfoStore,
         HttpServletResponse response) {
-    	fileOperationService.download(CommonParams.build(tenantId, userId), userAgent, range, resInfoStore, response);
+    	fileOperationService.download(userAgent, range, resInfoStore, response);
     }
 }

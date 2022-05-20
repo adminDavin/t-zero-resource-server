@@ -31,7 +31,7 @@ import io.minio.messages.Part;
 @Component
 public class FileHandlerHelper {
 
-    public static String DEFAULT_PATH = "files/%s/";
+    public static String DEFAULT_PATH = "cust/files/%s/";
 
     @Autowired
     private MinIoUtil minIoUtil;

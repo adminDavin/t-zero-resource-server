@@ -75,7 +75,17 @@
             <columnOverride column="is_deleted" property='deletedFlag' />
         </table>
         
+        <table tableName="t_zero_template_type_def" domainObjectName="TemplateTypeDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
         
+        <table tableName="t_zero_template_info_def" domainObjectName="TemplateInfoDef">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
         
     </context>
 </generatorConfiguration>	

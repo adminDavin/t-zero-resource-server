@@ -13,16 +13,24 @@ import com.t.zero.common.base.utils.UUIDUtils;
 import com.t.zero.cust.app.bu.dao.auto.CustTagInfoMapper;
 import com.t.zero.cust.app.bu.model.auto.CustTagInfo;
 import com.t.zero.cust.app.bu.model.auto.CustTagInfoExample;
+import com.t.zero.cust.app.helper.CustAppInfoHelper;
+import com.t.zero.cust.app.helper.CustRelTagGroupHelper;
 
 @Service
 public class CustTagInfoService {
-
+	@Autowired
+	private CustRelTagGroupHelper custRelTagGroupHelper;
+	
+	@Autowired
+	public  CustAppInfoHelper custAppInfoHelper;
+	
 	@Autowired
 	public CustTagInfoMapper custTagInfoMapper;
 
 	public Object list(CommonParams params, ObjectNode content) {
 		var example = new CustTagInfoExample();
 		example.createCriteria().andTenantIdEqualTo(params.getTenantId());
+		example.setOrderByClause(" updated_time desc");
 		return custTagInfoMapper.selectByExample(example);
 	}
 
@@ -59,6 +67,9 @@ public class CustTagInfoService {
 	}
 
 	public Object delete(CommonParams params, ObjectNode content) {
+		var test = custTagInfoMapper.selectByPrimaryKey(content.get("id").asInt());
+		custRelTagGroupHelper.deleteRela(test);
+		custAppInfoHelper.deleteRela(test);
 		return custTagInfoMapper.deleteByPrimaryKey(content.get("id").asInt());
 	}
 
