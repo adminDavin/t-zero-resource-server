@@ -1,5 +1,6 @@
 package com.t.zero.yg.crm.bu.service.config;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.t.zero.common.base.contants.TZeroConstants;
 import com.t.zero.common.base.request.CommonParams;
+import com.t.zero.common.base.utils.UUIDUtils;
 import com.t.zero.common.exception.TZeroException;
 import com.t.zero.yg.crm.bu.dao.auto.FieldDefMapper;
 import com.t.zero.yg.crm.bu.model.auto.FieldDef;
@@ -29,6 +31,7 @@ public class FieldDefService {
 	private BuPoBaseComp<FieldDefVo> buPoBaseComp;
 
 	public FieldDefVo insert(CommonParams params, FieldDefVo b) {
+		b.setFieldKey(StringUtils.isBlank(b.getFieldKey()) ? UUIDUtils.getUUIDTime() : b.getFieldKey());
 		if (StringUtils.isNotBlank(b.getPvCode())) {
 			modify(params, b);
 			return getById(b.getId());
@@ -108,7 +111,7 @@ public class FieldDefService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<FieldDefVo> getByBussiCode(String bussiCode) {
+	public List<FieldDefVo> getByBussCode(String bussiCode) {
 		var example = new FieldDefExample();
 		example.createCriteria().andBussCodeEqualTo(bussiCode).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
@@ -117,7 +120,20 @@ public class FieldDefService {
 			BeanUtils.copyProperties(t, r);
 			r.setPvJson(buPoBaseComp.toJson(t.getPvDesc()));
 			return r;
-		}).collect(Collectors.toList());
+		}).sorted(Comparator.comparing(FieldDefVo::getLvOrder)).collect(Collectors.toList());
+	}
+
+	public List<FieldDefVo> getValidByBussCode(String bussiCode) {
+		var example = new FieldDefExample();
+		example.createCriteria().andBussCodeEqualTo(bussiCode).andPvStatusEqualTo(TZeroConstants.NORMAL)
+				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
+		return ts.stream().map(t -> {
+			var r = new FieldDefVo();
+			BeanUtils.copyProperties(t, r);
+			r.setPvJson(buPoBaseComp.toJson(t.getPvDesc()));
+			return r;
+		}).sorted(Comparator.comparing(FieldDefVo::getLvOrder)).collect(Collectors.toList());
 	}
 
 	public List<FieldDefVo> clearUnused(List<FieldDefVo> gFields) {
@@ -143,6 +159,18 @@ public class FieldDefService {
 		c.setDeletedFlag(TZeroConstants.ABNORMAL);
 		example.createCriteria().andPvCodeIn(pvCodes);
 		fieldDefMapper.updateByExampleSelective(c, example);
+	}
+
+	public void deleteByGroupCodes(List<String> oldGroups) {
+		if (CollectionUtils.isEmpty(oldGroups)) {
+			return;
+		}
+		var c = new FieldDef();
+		var example = new FieldDefExample();
+		c.setDeletedFlag(TZeroConstants.ABNORMAL);
+		example.createCriteria().andGroupCodeIn(oldGroups);
+		fieldDefMapper.updateByExampleSelective(c, example);
+
 	}
 
 }

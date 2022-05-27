@@ -92,8 +92,12 @@
             <generatedKey column="id" sqlStatement="mysql" identity="true" />
             <columnOverride column="is_deleted" property='deletedFlag' />
         </table>
-        
-        
+        <table tableName="yg_customer_def_buss" domainObjectName="CustomerDefBuss">
+            <property name="useActualColumnNames" value="false" />
+            <generatedKey column="id" sqlStatement="mysql" identity="true" />
+            <columnOverride column="is_deleted" property='deletedFlag' />
+        </table>
+
         
     </context>
 </generatorConfiguration>	

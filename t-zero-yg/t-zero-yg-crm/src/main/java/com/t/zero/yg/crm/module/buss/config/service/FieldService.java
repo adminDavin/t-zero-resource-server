@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.t.zero.common.base.contants.TZeroConstants;
 import com.t.zero.common.base.request.CommonParams;
 import com.t.zero.yg.crm.bu.service.config.BussDefService;
 import com.t.zero.yg.crm.bu.service.config.FieldDefService;
@@ -49,15 +50,16 @@ public class FieldService {
 	public ObjectNode insertFields(CommonParams params, JsonNode content) {
 		BussDefVo bussDef = bussDefService.getByCode(content.get("bussCode").asText());
 		var fieldGroups = Arrays.asList(mapper.convertValue(content.get("fieldGroups"), ObjectNode[].class));
-		var k = 0;
 
 		var existsGroupCode = fieldGroups.stream().filter(i -> i.has("pvCode")).map(i -> i.get("pvCode").asText())
 				.collect(Collectors.toList());
-		var oldGroups = fieldGroupDefService.getByBussCode(bussDef.getPvCode()).stream().map(i -> i.getPvCode()).collect(Collectors.toList());
+		var oldGroups = fieldGroupDefService.getByBussCode(bussDef.getPvCode()).stream().map(i -> i.getPvCode())
+				.collect(Collectors.toList());
+
 		oldGroups = oldGroups.stream().filter(i -> !existsGroupCode.contains(i)).collect(Collectors.toList());
-
 		fieldGroupDefService.deleteByPvCodes(oldGroups);
-
+		fieldDefService.deleteByGroupCodes(oldGroups);
+		var k = 1000;
 		for (var j : fieldGroups) {
 			k++;
 			var i = mapper.convertValue(j, FieldGroupDefVo.class);
@@ -72,7 +74,7 @@ public class FieldService {
 						.map(c -> c.getPvCode()).collect(Collectors.toList());
 				oldFields = oldFields.stream().filter(c -> !existsFieldCode.contains(c.getPvCode()))
 						.collect(Collectors.toList());
-				var m = 0;
+				var m = k* 10;
 				for (var field : fields) {
 					m++;
 					field.setBussCode(bussDef.getPvCode());
@@ -81,9 +83,7 @@ public class FieldService {
 					fieldDefService.insert(params, field);
 				}
 			}
-
 			fieldDefService.deleteByPvCodes(oldFields.stream().map(c -> c.getPvCode()).collect(Collectors.toList()));
-
 		}
 		return getByCode(params, bussDef.getPvCode());
 	}
@@ -132,7 +132,9 @@ public class FieldService {
 	}
 
 	public ObjectNode getColumnsByCode(CommonParams params, String bussCode) {
-//		var fields = fieldDefService.getByGroupCodes(groupCodes);
+		var fields = fieldDefService.getByBussCode(bussCode);
+		fields = fields.stream().filter(i -> TZeroConstants.NORMAL.equals(i.getPvStatus()))
+				.sorted(Comparator.comparing(FieldDefVo::getLvOrder)).collect(Collectors.toList());
 		return null;
 	}
 }

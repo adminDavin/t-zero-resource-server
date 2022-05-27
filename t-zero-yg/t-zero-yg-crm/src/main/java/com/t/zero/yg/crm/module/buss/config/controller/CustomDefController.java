@@ -15,38 +15,40 @@ import com.t.zero.common.base.request.CommonParams;
 import com.t.zero.common.base.request.ContentRequest;
 import com.t.zero.common.base.response.ResponseResult;
 import com.t.zero.component.response.ResponseExceptionHandler;
+import com.t.zero.yg.crm.bu.service.config.CustomerDefBussService;
+import com.t.zero.yg.crm.module.buss.config.service.CustomDefService;
 import com.t.zero.yg.crm.module.buss.config.service.FieldService;
 
 @RestController
-@RequestMapping("/fields")
-public class FieldController extends TZeroBasicController {
+@RequestMapping("/custom_def")
+public class CustomDefController extends TZeroBasicController {
 
-	private final FieldService fieldService;
+	private final CustomDefService customDefService;
 
 	private final String classname;
 
-	public FieldController(ResponseExceptionHandler responseExceptionHandler, FieldService fieldService) {
+	public CustomDefController(ResponseExceptionHandler responseExceptionHandler, CustomDefService customDefService) {
 		super(responseExceptionHandler);
-		this.fieldService = fieldService;
+		this.customDefService = customDefService;
 		this.classname = this.getClass().getName();
 	}
 
-	@PostMapping(value = "/create", produces = RequestConstants.CONTENT_TYPE_JSON)
+	@PostMapping(value = "/buss/update", produces = RequestConstants.CONTENT_TYPE_JSON)
 	public ResponseResult<Object> createCorp(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
-			return ResponseResult
-					.ok(fieldService.insertFields(CommonParams.build(tenantId, userId), content.getContent()));
+			return ResponseResult.ok(
+					customDefService.updateCustomDefBuss(CommonParams.build(tenantId, userId), content.getContent()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
 	}
 
-	@GetMapping(value = "/get", produces = RequestConstants.CONTENT_TYPE_JSON)
+	@GetMapping(value = "/buss/get", produces = RequestConstants.CONTENT_TYPE_JSON)
 	public ResponseResult<Object> getCorp(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "bussCode") String bussCode) {
 		try {
-			return ResponseResult.ok(fieldService.getByCode(CommonParams.build(tenantId, userId), bussCode));
+			return ResponseResult.ok(customDefService.getCustomDefBuss(CommonParams.build(tenantId, userId), bussCode));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
