@@ -1,0 +1,15 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.t.zero</groupId>
+    <artifactId>t-zero</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <groupId>com.t.zero.yg</groupId>
+  <artifactId>t-zero-yg</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>t-zero-yg-crm</module>
+  	<module>t-zero-yg-erp</module>
+  </modules>
+</project>

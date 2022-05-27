@@ -137,5 +137,6 @@
 		<module>t-zero-basic</module>
 		<module>t-zero-resource-center</module>
 		<module>t-zero-cust</module>
+		<module>t-zero-yg</module>
 	</modules>
 </project>

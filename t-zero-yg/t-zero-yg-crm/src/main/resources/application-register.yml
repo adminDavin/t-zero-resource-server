@@ -1,0 +1,7 @@
+spring:
+   cloud:
+      consul:
+         host: t-zero-consol.com
+         port: 8500
+         discovery:
+            register: true
