@@ -25,31 +25,11 @@ public class DictionariesController extends TZeroBasicController {
 
 	private final String classname;
 
-	public DictionariesController(ResponseExceptionHandler responseExceptionHandler, DictionariesService dictionariesService) {
+	public DictionariesController(ResponseExceptionHandler responseExceptionHandler,
+			DictionariesService dictionariesService) {
 		super(responseExceptionHandler);
 		this.dictionariesService = dictionariesService;
 		this.classname = this.getClass().getName();
-	}
-
-	@PostMapping(value = "/list", produces = RequestConstants.CONTENT_TYPE_JSON)
-	public ResponseResult<Object> list(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
-			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
-		try {
-			return ResponseResult.ok(dictionariesService.getCorps(CommonParams.build(tenantId, userId), content.getContent()));
-		} catch (Exception e) {
-			return responseExceptionHandler.handle(classname, e);
-		}
-	}
-
-	@PostMapping(value = "/simple_list", produces = RequestConstants.CONTENT_TYPE_JSON)
-	public ResponseResult<Object> simpleList(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
-			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
-		try {
-			return ResponseResult
-					.ok(dictionariesService.getSimpleCorps(CommonParams.build(tenantId, userId), content.getContent()));
-		} catch (Exception e) {
-			return responseExceptionHandler.handle(classname, e);
-		}
 	}
 
 	@PostMapping(value = "/create", produces = RequestConstants.CONTENT_TYPE_JSON)
@@ -57,7 +37,7 @@ public class DictionariesController extends TZeroBasicController {
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
 			return ResponseResult
-					.ok(dictionariesService.insertCorp(CommonParams.build(tenantId, userId), content.getContent()));
+					.ok(dictionariesService.insert(CommonParams.build(tenantId, userId), content.getContent()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
@@ -68,7 +48,7 @@ public class DictionariesController extends TZeroBasicController {
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
 			return ResponseResult.ok(dictionariesService.deleteCorp(CommonParams.build(tenantId, userId),
-					content.getContent().get("corpId").asInt()));
+					content.getContent().get("pvCode").asText()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
@@ -76,9 +56,9 @@ public class DictionariesController extends TZeroBasicController {
 
 	@GetMapping(value = "/get", produces = RequestConstants.CONTENT_TYPE_JSON)
 	public ResponseResult<Object> getCorp(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
-			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "corpId") Integer corpId) {
+			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "pvCode") String pvCode) {
 		try {
-			return ResponseResult.ok(dictionariesService.getCorp(CommonParams.build(tenantId, userId), corpId));
+			return ResponseResult.ok(dictionariesService.getCorp(CommonParams.build(tenantId, userId), pvCode));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}

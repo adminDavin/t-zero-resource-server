@@ -15,9 +15,7 @@ import com.t.zero.common.base.request.CommonParams;
 import com.t.zero.common.base.request.ContentRequest;
 import com.t.zero.common.base.response.ResponseResult;
 import com.t.zero.component.response.ResponseExceptionHandler;
-import com.t.zero.yg.crm.bu.service.config.CustomerDefBussService;
 import com.t.zero.yg.crm.module.buss.config.service.CustomDefService;
-import com.t.zero.yg.crm.module.buss.config.service.FieldService;
 
 @RestController
 @RequestMapping("/custom_def")
