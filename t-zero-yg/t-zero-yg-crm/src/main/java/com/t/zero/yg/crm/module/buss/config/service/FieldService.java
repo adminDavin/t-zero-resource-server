@@ -48,7 +48,7 @@ public class FieldService {
 	 * @return
 	 */
 	public ObjectNode insertFields(CommonParams params, JsonNode content) {
-		BussDefVo bussDef = bussDefService.getByCode(content.get("bussCode").asText());
+		BussDefVo bussDef = bussDefService.getByCode(content.get("pvCode").asText());
 		var fieldGroups = Arrays.asList(mapper.convertValue(content.get("fieldGroups"), ObjectNode[].class));
 
 		var existsGroupCode = fieldGroups.stream().filter(i -> i.has("pvCode")).map(i -> i.get("pvCode").asText())
