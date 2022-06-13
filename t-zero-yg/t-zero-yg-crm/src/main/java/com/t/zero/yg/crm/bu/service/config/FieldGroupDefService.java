@@ -38,7 +38,7 @@ public class FieldGroupDefService {
 		BeanUtils.copyProperties(b, c);
 		c.setPvDesc(b.getPvJson().toString());
 		fieldGroupDefMapper.insert(c);
-		return getByCode(b.getPvCode());
+		return getByCode(params, b.getPvCode());
 	}
 
 	public FieldGroupDef modify(CommonParams params, FieldGroupDefVo b) {
@@ -70,9 +70,9 @@ public class FieldGroupDefService {
 		return r;
 	}
 
-	public FieldGroupDefVo getByCode(String code) {
+	public FieldGroupDefVo getByCode(CommonParams params, String code) {
 		var example = new FieldGroupDefExample();
-		example.createCriteria().andPvCodeEqualTo(code);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andPvCodeEqualTo(code);
 		var ts = fieldGroupDefMapper.selectByExampleWithBLOBs(example);
 		if (CollectionUtils.isEmpty(ts)) {
 			throw new TZeroException("row data not exists");
@@ -84,9 +84,10 @@ public class FieldGroupDefService {
 		return r;
 	}
 
-	public List<FieldGroupDefVo> getByBussCode(String bussCode) {
+	public List<FieldGroupDefVo> getByBussCode(CommonParams params, String bussCode) {
 		var example = new FieldGroupDefExample();
-		example.createCriteria().andBussCodeEqualTo(bussCode).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		example.createCriteria().andBussCodeEqualTo(bussCode).andTenantIdEqualTo(params.getTenantId())
+				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldGroupDefMapper.selectByExampleWithBLOBs(example);
 		return ts.stream().map(t -> {
 			var r = new FieldGroupDefVo();

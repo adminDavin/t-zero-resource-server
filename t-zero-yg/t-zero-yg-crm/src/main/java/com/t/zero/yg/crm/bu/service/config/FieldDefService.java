@@ -41,7 +41,7 @@ public class FieldDefService {
 		BeanUtils.copyProperties(b, c);
 		c.setPvDesc(b.getPvJson().toString());
 		fieldDefMapper.insert(c);
-		return getByCode(b.getPvCode());
+		return getByCode(params, b.getPvCode());
 	}
 
 	public FieldDef modify(CommonParams params, FieldDefVo b) {
@@ -73,9 +73,9 @@ public class FieldDefService {
 		return r;
 	}
 
-	public FieldDefVo getByCode(String code) {
+	public FieldDefVo getByCode(CommonParams params, String code) {
 		var example = new FieldDefExample();
-		example.createCriteria().andPvCodeEqualTo(code);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andPvCodeEqualTo(code);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
 		if (CollectionUtils.isEmpty(ts)) {
 			throw new TZeroException("row data not exists");
@@ -87,9 +87,10 @@ public class FieldDefService {
 		return r;
 	}
 
-	public List<FieldDefVo> getByGroupCode(String groupCode) {
+	public List<FieldDefVo> getByGroupCode(CommonParams params, String groupCode) {
 		var example = new FieldDefExample();
-		example.createCriteria().andGroupCodeEqualTo(groupCode).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andGroupCodeEqualTo(groupCode)
+				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
 		return ts.stream().map(t -> {
 			var r = new FieldDefVo();
@@ -99,9 +100,10 @@ public class FieldDefService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<FieldDefVo> getByGroupCodes(List<String> groupCodes) {
+	public List<FieldDefVo> getByGroupCodes(CommonParams params, List<String> groupCodes) {
 		var example = new FieldDefExample();
-		example.createCriteria().andGroupCodeIn(groupCodes).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andGroupCodeIn(groupCodes)
+				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
 		return ts.stream().map(t -> {
 			var r = new FieldDefVo();
@@ -111,9 +113,10 @@ public class FieldDefService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<FieldDefVo> getByBussCode(String bussiCode) {
+	public List<FieldDefVo> getByBussCode(CommonParams params, String bussiCode) {
 		var example = new FieldDefExample();
-		example.createCriteria().andBussCodeEqualTo(bussiCode).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andBussCodeEqualTo(bussiCode)
+				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
 		return ts.stream().map(t -> {
 			var r = new FieldDefVo();
@@ -123,10 +126,25 @@ public class FieldDefService {
 		}).sorted(Comparator.comparing(FieldDefVo::getLvOrder)).collect(Collectors.toList());
 	}
 
-	public List<FieldDefVo> getValidByBussCode(String bussiCode) {
+	public FieldDefVo getByFieldKey(CommonParams params, String bussiCode, String fieldKey) {
 		var example = new FieldDefExample();
-		example.createCriteria().andBussCodeEqualTo(bussiCode).andPvStatusEqualTo(TZeroConstants.NORMAL)
-				.andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andBussCodeEqualTo(bussiCode)
+				.andFieldKeyEqualTo(fieldKey).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
+		if (CollectionUtils.isEmpty(ts)) {
+			throw new TZeroException("row data not exists");
+		}
+		var t = ts.get(0);
+		var r = new FieldDefVo();
+		BeanUtils.copyProperties(t, r);
+		r.setPvJson(buPoBaseComp.toJson(t.getPvDesc()));
+		return r;
+	}
+
+	public List<FieldDefVo> getValidByBussCode(CommonParams params, String bussiCode) {
+		var example = new FieldDefExample();
+		example.createCriteria().andTenantIdEqualTo(params.getTenantId()).andBussCodeEqualTo(bussiCode)
+				.andPvStatusEqualTo(TZeroConstants.NORMAL).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
 		var ts = fieldDefMapper.selectByExampleWithBLOBs(example);
 		return ts.stream().map(t -> {
 			var r = new FieldDefVo();
@@ -150,25 +168,25 @@ public class FieldDefService {
 		return j;
 	}
 
-	public void deleteByPvCodes(List<String> pvCodes) {
+	public void deleteByPvCodes(CommonParams params, List<String> pvCodes) {
 		if (CollectionUtils.isEmpty(pvCodes)) {
 			return;
 		}
 		var c = new FieldDef();
 		var example = new FieldDefExample();
 		c.setDeletedFlag(TZeroConstants.ABNORMAL);
-		example.createCriteria().andPvCodeIn(pvCodes);
+		example.createCriteria().andPvCodeIn(pvCodes).andTenantIdEqualTo(params.getTenantId());
 		fieldDefMapper.updateByExampleSelective(c, example);
 	}
 
-	public void deleteByGroupCodes(List<String> oldGroups) {
+	public void deleteByGroupCodes(CommonParams params, List<String> oldGroups) {
 		if (CollectionUtils.isEmpty(oldGroups)) {
 			return;
 		}
 		var c = new FieldDef();
 		var example = new FieldDefExample();
 		c.setDeletedFlag(TZeroConstants.ABNORMAL);
-		example.createCriteria().andGroupCodeIn(oldGroups);
+		example.createCriteria().andGroupCodeIn(oldGroups).andTenantIdEqualTo(params.getTenantId());
 		fieldDefMapper.updateByExampleSelective(c, example);
 
 	}

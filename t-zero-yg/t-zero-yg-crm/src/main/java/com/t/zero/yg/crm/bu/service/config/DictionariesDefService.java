@@ -88,7 +88,19 @@ public class DictionariesDefService {
 		r.setPvJson(buPoBaseComp.toJson(t.getPvDesc()));
 		return r;
 	}
-	
+
+	public List<DictionariesDefVo> getByCodes(List<String> codes) {
+		var example = new DictionariesDefExample();
+		example.createCriteria().andPvCodeIn(codes);
+		var ts = dictionariesDefMapper.selectByExampleWithBLOBs(example);
+		return ts.stream().map(t -> {
+			var r = new DictionariesDefVo();
+			BeanUtils.copyProperties(t, r);
+			r.setPvJson(buPoBaseComp.toJson(t.getPvDesc()));
+			return r;
+		}).collect(Collectors.toList());
+	}
+
 	public Page<DictionariesDefVo> listCorps(String c, String sorted, Page<DictionariesDefVo> page) {
 		var ct = manualDictionariesDefMapper.countDictionariesDef(c, sorted);
 		page.setTotalCount(ct);

@@ -38,10 +38,10 @@ public class CustomerDefBussService {
 		return getByCode(b.getPvCode());
 	}
 
-	public CustomerDefBussVo modify(CommonParams params, CustomerDefBussVo b) {
+	public CustomerDefBuss modify(CommonParams params, CustomerDefBussVo b) {
 		getById(b.getId());
 		b = buPoBaseComp.modify(b, params);
-		var c = new CustomerDefBussVo();
+		var c = new CustomerDefBuss();
 		BeanUtils.copyProperties(b, c);
 		c.setPvDesc(b.getPvJson().toString());
 		customerDefBussMapper.updateByPrimaryKeySelective(c);

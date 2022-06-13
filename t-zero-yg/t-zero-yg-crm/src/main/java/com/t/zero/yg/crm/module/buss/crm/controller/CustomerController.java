@@ -46,7 +46,7 @@ public class CustomerController extends TZeroBasicController {
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
 			return ResponseResult
-					.ok(customerService.getSimple(CommonParams.build(tenantId, userId), content.getContent()));
+					.ok(customerService.getSimpleList(CommonParams.build(tenantId, userId), content.getContent()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
@@ -68,7 +68,7 @@ public class CustomerController extends TZeroBasicController {
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
 			return ResponseResult.ok(customerService.delete(CommonParams.build(tenantId, userId),
-					content.getContent().get("corpId").asInt()));
+					content.getContent()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}
@@ -76,7 +76,7 @@ public class CustomerController extends TZeroBasicController {
 
 	@GetMapping(value = "/get", produces = RequestConstants.CONTENT_TYPE_JSON)
 	public ResponseResult<Object> getCorp(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
-			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "corpId") Integer corpId) {
+			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "id") Integer corpId) {
 		try {
 			return ResponseResult.ok(customerService.get(CommonParams.build(tenantId, userId), corpId));
 		} catch (Exception e) {

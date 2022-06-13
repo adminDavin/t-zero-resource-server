@@ -1,5 +1,8 @@
 package com.t.zero.yg.crm.module.buss.config.service;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +63,10 @@ public class DictionariesService {
 		var r = dictionariesDefService.getByCode(pvCode);
 		dictionariesDefService.delete(params, r);
 		return mapper.createObjectNode();
+	}
+
+	public Object getByCodes(CommonParams params, ObjectNode content) {
+		List<String> pvCodes = Arrays.asList(mapper.convertValue(content.get("pvCodes"), String[].class));
+		return dictionariesDefService.getByCodes(pvCodes);
 	}
 }

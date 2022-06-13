@@ -2,9 +2,12 @@ package com.t.zero.yg.crm.module.buss.crm.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,16 +55,26 @@ public class CorpService {
 
 	@Autowired
 	private SqlCreatorComponent sqlCreatorComponent;
-	
+
 	@Autowired
 	private CustomerInfoService customerInfoService;
-	
+
 	@Autowired
 	private FacilitatorInfoService facilitatorInfoService;
 
 	@Autowired
 	private SupplierInfoService supplierInfoService;
+
+	public ObjectNode insertCorp(CommonParams params, ObjectNode content, String customerName) {
+		var tCorpInfo = mapper.convertValue(content.get("corpInfo"), CorpInfoVo.class);
+		tCorpInfo.setCorpBrief(customerName);
+		return insertCorp(params, tCorpInfo, content);
+	}
 	
+	public ObjectNode insertCorp(CommonParams params, JsonNode content) {
+		var tCorpInfo = mapper.convertValue(content.get("corpInfo"), CorpInfoVo.class);
+		return insertCorp(params, tCorpInfo, content);
+	}
 
 	/**
 	 * 插入或者更新通讯录
@@ -70,13 +83,28 @@ public class CorpService {
 	 * @param content
 	 * @return
 	 */
-	public ObjectNode insertCorp(CommonParams params, JsonNode content) {
-		var corpInfo = corpInfoService.insert(params, mapper.convertValue(content.get("corpInfo"), CorpInfoVo.class));
-		if (content.has("corpAccounts")) {
-			var tempAccounts = mapper.convertValue(content.get("corpAccounts"), CorpAccountVo[].class);
+	public ObjectNode insertCorp(CommonParams params, CorpInfoVo tCorpInfo, JsonNode content) {
+		var tempCorp = corpInfoService.getByCorpBrief(tCorpInfo.getCorpBrief());
+		if (!ObjectUtils.isEmpty(tempCorp) && StringUtils.isBlank(tCorpInfo.getPvCode())) {
+			throw new RuntimeException("企业已存在, 不可以重复添加");
+		}
+		var corpInfo = corpInfoService.insert(params, tCorpInfo);
+		if (content.has("corpAccountBases")) {
+			var tempAccounts = mapper.convertValue(content.get("corpAccountBases"), CorpAccountVo[].class);
 			for (var tempAccount : tempAccounts) {
 				tempAccount.setCorpCode(corpInfo.getPvCode());
 				tempAccount.setCorpId(corpInfo.getId());
+				tempAccount.setAccountType("baseAccount");
+				corpAccountService.insert(params, tempAccount);
+			}
+		}
+		
+		if (content.has("corpAccountOuters")) {
+			var tempAccounts = mapper.convertValue(content.get("corpAccountOuters"), CorpAccountVo[].class);
+			for (var tempAccount : tempAccounts) {
+				tempAccount.setCorpCode(corpInfo.getPvCode());
+				tempAccount.setCorpId(corpInfo.getId());
+				tempAccount.setAccountType("outerAccount");
 				corpAccountService.insert(params, tempAccount);
 			}
 		}
@@ -119,7 +147,9 @@ public class CorpService {
 			i.setTenantId(null);
 			i.setDeletedFlag(null);
 		}
-		r.set("corpAccounts", mapper.convertValue(corpAccount, ArrayNode.class));
+		var corpAccountMap = corpAccount.stream().collect(Collectors.groupingBy(CorpAccountVo::getAccountType));
+		r.set("corpAccountOuters", mapper.convertValue(corpAccountMap.getOrDefault("outerAccount", List.of()), ArrayNode.class));
+		r.set("corpAccountBases", mapper.convertValue(corpAccountMap.getOrDefault("baseAccount", List.of()), ArrayNode.class));
 		var corpAddresses = corpAddressService.getByCorpCode(corpInfo.getPvCode());
 		for (var i : corpAddresses) {
 			i.setCorpCode(null);
@@ -149,17 +179,20 @@ public class CorpService {
 	 * @param corpId
 	 * @return
 	 */
-	public ObjectNode deleteCorp(CommonParams params, Integer corpId) {
-		var corpInfo = new CorpInfoVo();
-		corpInfo.setId(corpId);
-		corpInfo = corpInfoService.delete(params, corpInfo);
-		corpAccountService.deleteByCorpId(params, corpId);
-		corpAddressService.deleteByCorpId(params, corpId);
-		corpContactService.deleteByCorpId(params, corpId);
-		facilitatorInfoService.deleteByCorpId(params, corpId);
-		customerInfoService.deleteByCorpId(params, corpId);
-		supplierInfoService.deleteByCorpId(params, corpId);
-		return mapper.createObjectNode();
+	public Object deleteCorp(CommonParams params, ObjectNode content) {
+		var ids = Arrays.asList(mapper.convertValue(content.get("ids"), Integer[].class));
+		for (var id : ids) {
+			var corpInfo = new CorpInfoVo();
+			corpInfo.setId(id);
+			corpInfo = corpInfoService.delete(params, corpInfo);
+			corpAccountService.deleteByCorpId(params, id);
+			corpAddressService.deleteByCorpId(params, id);
+			corpContactService.deleteByCorpId(params, id);
+			facilitatorInfoService.deleteByCorpId(params, id);
+			customerInfoService.deleteByCorpId(params, id);
+			supplierInfoService.deleteByCorpId(params, id);
+		}
+		return ids.size();
 	}
 
 	/**

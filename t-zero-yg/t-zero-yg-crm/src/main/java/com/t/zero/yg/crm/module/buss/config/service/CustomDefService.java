@@ -2,6 +2,7 @@ package com.t.zero.yg.crm.module.buss.config.service;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +30,8 @@ public class CustomDefService {
 
 	@Autowired
 	public CustomerDefBussService customerDefBussService;
+	private static List<String> defaultHindFieldKeys = List.of("pvCode", "createdTime", "updatedTime", "createdUsername", "updatedUsername");
+	private static List<String> defaultIgonreFieldKeys = List.of("IMAGE_FILE", "OTHER_FILE");
 
 	public ObjectNode updateCustomDefBuss(CommonParams params, ObjectNode content) {
 		var cBuss = mapper.convertValue(content, CustomerDefBussVo.class);
@@ -40,18 +43,19 @@ public class CustomDefService {
 			i++;
 			j.setLvOrder(i);
 		}
-		var tempCBuss = customerDefBussService.getByUserAndBussCode(params.getTenantId(), params.getUserId(),
-				cBuss.getBussCode());
-		tempCBuss.setPvJson(cBuss.getPvJson());
+		var tempCBuss = customerDefBussService.getByUserAndBussCode(params.getTenantId(), params.getUserId(), cBuss.getBussCode());
+		tempCBuss.setPvJson(mapper.convertValue(oldPvJson, ArrayNode.class));
+		tempCBuss.setBussCode(cBuss.getBussCode());
+		tempCBuss.setUserId(params.getUserId());
 		tempCBuss.setPvStatus(TZeroConstants.NORMAL);
 		customerDefBussService.insert(params, tempCBuss);
 		return getCustomDefBuss(params, cBuss.getBussCode());
 	}
 
 	public ObjectNode getCustomDefBuss(CommonParams params, String bussCode) {
-		var fields = fieldDefService.getByBussCode(bussCode);
-		var cFields = fields.stream().map(i -> FieldColumnVo.init(i)).collect(Collectors.toList());
-
+		var fields = fieldDefService.getByBussCode(params, bussCode);
+		var cFields = fields.stream().filter(i -> !defaultIgonreFieldKeys.contains(i.getFieldType())).map(i -> FieldColumnVo.init(i, defaultHindFieldKeys)).collect(Collectors.toList());
+		
 		var cBuss = customerDefBussService.getByUserAndBussCode(params.getTenantId(), params.getUserId(), bussCode);
 		cBuss = customerDefBussService.clearUnused(cBuss);
 		if (StringUtils.isNotBlank(cBuss.getPvCode())) {

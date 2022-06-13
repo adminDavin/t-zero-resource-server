@@ -64,4 +64,14 @@ public class DictionariesController extends TZeroBasicController {
 		}
 	}
 
+	@PostMapping(value = "/get_by_codes", produces = RequestConstants.CONTENT_TYPE_JSON)
+	public ResponseResult<Object> getByCodes(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
+			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
+		try {
+			return ResponseResult.ok(dictionariesService.getByCodes(CommonParams.build(tenantId, userId), content.getContent()));
+		} catch (Exception e) {
+			return responseExceptionHandler.handle(classname, e);
+		}
+	}
+	
 }

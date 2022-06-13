@@ -67,8 +67,8 @@ public class CorpController extends TZeroBasicController {
 	public ResponseResult<Object> deleteCorp(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
 			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestBody ContentRequest content) {
 		try {
-			return ResponseResult.ok(corpService.deleteCorp(CommonParams.build(tenantId, userId),
-					content.getContent().get("corpId").asInt()));
+			return ResponseResult
+					.ok(corpService.deleteCorp(CommonParams.build(tenantId, userId), content.getContent()));
 		} catch (Exception e) {
 			return responseExceptionHandler.handle(classname, e);
 		}

@@ -52,4 +52,24 @@ public class FieldController extends TZeroBasicController {
 		}
 	}
 
+	
+	@PostMapping(value = "/init", produces = RequestConstants.CONTENT_TYPE_JSON)
+	public ResponseResult<Object> initInstanceData(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
+			@RequestHeader(value = Header.USER_ID) Integer userId,  @RequestBody ContentRequest content) {
+		try {
+			return ResponseResult.ok(fieldService.initInstanceData(CommonParams.build(tenantId, userId), content.getContent()));
+		} catch (Exception e) {
+			return responseExceptionHandler.handle(classname, e);
+		}
+	}
+	
+	@GetMapping(value = "/get_by_key", produces = RequestConstants.CONTENT_TYPE_JSON)
+	public ResponseResult<Object> getByFieldKey(@RequestHeader(value = Header.TENANT_ID) Integer tenantId,
+			@RequestHeader(value = Header.USER_ID) Integer userId, @RequestParam(value = "bussCode") String bussCode, @RequestParam(value = "fieldKey") String fieldKey) {
+		try {
+			return ResponseResult.ok(fieldService.getByFieldKey(CommonParams.build(tenantId, userId), bussCode, fieldKey));
+		} catch (Exception e) {
+			return responseExceptionHandler.handle(classname, e);
+		}
+	}
 }

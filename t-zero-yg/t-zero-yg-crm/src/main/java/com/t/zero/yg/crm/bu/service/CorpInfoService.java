@@ -118,19 +118,29 @@ public class CorpInfoService {
 		var rs = manualCorpInfoMapper.listSimpleCorps(c, sorted);
 		
 		for (var i : rs) {
-			i.setCorpLevel(null);
 			i.setCorpSource(null);
 			i.setDeletedFlag(null);
 			i.setUpdatedUserId(null);
 			i.setUpdatedTime(null);
 			i.setTenantId(null);
 			i.setPvDesc(null);
-			i.setIndustryCode(null);
 			i.setDeletedFlag(null);
 			i.setCreatedUserId(null);
 			i.setCreatedTime(null);
 		}
 		return rs;
+	}
+
+	public CorpInfo getByCorpBrief(String corpBrief) {
+		var example = new CorpInfoExample();
+		example.createCriteria().andCorpBriefEqualTo(corpBrief).andDeletedFlagEqualTo(TZeroConstants.NORMAL);
+		var ts = corpInfofoMapper.selectByExampleWithBLOBs(example);
+		if (CollectionUtils.isEmpty(ts)) {
+			return null;
+		}
+		return ts.get(0);
+		
+		
 	}
 
 }

@@ -39,7 +39,12 @@ public class SqlCreatorComponent {
 				}
 				String c = s.get("column").asText();
 				String v = s.get("values").get(0).asText();
-				conditions = conditions + " and " + c + " like '%" + v + "%'";
+				if(s.has("searchType") && "accurate".equals(s.get("searchType").asText())) {
+					conditions = conditions + " and " + c + " = '" + v + "'";
+				} else {
+					conditions = conditions + " and " + c + " like '%" + v + "%'";
+				}
+				
 			}
 		}
 		return conditions;
